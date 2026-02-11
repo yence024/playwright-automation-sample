@@ -1,0 +1,15 @@
+export const TIMEOUTS = {
+    //stadard page load timeout
+    PAGE_LOAD: 30000,
+
+    ELEMENT_WAIT: 10000,
+
+    SHORT_WAIT: 5000,
+
+    API_TIMEOUT: 15000,
+
+    NAVIGATION_TIMEOUT: 30000
+
+} as const;
+
+export const {PAGE_LOAD, ELEMENT_WAIT, SHORT_WAIT, API_TIMEOUT, NAVIGATION_TIMEOUT} = TIMEOUTS;

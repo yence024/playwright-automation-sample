@@ -51,4 +51,5 @@ async expectLockedOuterror(): Promise<void>{
     await expect(this.errorMessage).toBeVisible({timeout: ELEMENT_WAIT})
     await expect(this.errorMessage).toContainText('Sorry, this user has been locked out.');
 };
+
 }

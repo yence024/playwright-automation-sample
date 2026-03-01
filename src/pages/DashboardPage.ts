@@ -1,6 +1,7 @@
 import { BasePage } from "./BasePage";
 import {ELEMENT_WAIT} from '../utils/timeout';
-import {Page, Locator} from "@playwright/test";
+import {Page, Locator, expect} from "@playwright/test";
+import { listenerCount } from "node:cluster";
 
 //DashboardPage - POM
 
@@ -15,10 +16,9 @@ export class DashboardPage extends BasePage{
     readonly cart: Locator
     readonly button: Locator;
     readonly cartBadge: Locator;  
-    
-
-    
-
+    readonly sortDropdown: Locator;
+    readonly itemPrice: Locator;
+    readonly inventoryNames: Locator;
 
 //constructor to initialize the locators
     constructor(page: Page){
@@ -28,9 +28,12 @@ export class DashboardPage extends BasePage{
         this.hamburgerMenu = page.locator('#react-burger-menu-btn');
         this.logoutLink = page.locator('#logout_sidebar_link');
         this.cart = page.locator('#shopping_cart_link > a');
-        this.inventoryItems = page.locator('.inventory_item');
         this.button = page.locator('.btn_inventory');
         this.cartBadge = page.locator('.shopping_cart_badge');
+        this.sortDropdown = page.locator('.product_sort_container');
+        this.itemPrice = page.locator('.inventory_item_price');
+        this.inventoryNames = page.locator('inventory_item_name');
+        this.inventoryItems = page.locator('.inventory_item');
     };
 
 //open hamburger menu
@@ -39,12 +42,130 @@ async openHamburgerMenu(): Promise<void>{
     await this.logoutLink.waitFor({ state: 'visible', timeout: ELEMENT_WAIT });
 };
 
+
+//cartbutton
+async clickCart(): Promise<void>{
+    await this.cart.click();
+    await this.waitForNavigation('networkidle');
+};
+
+async shoppingCartBridge(): Promise<void> {
+
+}
+
+//add product button
+async addProduct(index: number){
+    const button = this.button.nth(index);
+
+    //verify initial text add to cart
+    await expect(button).toHaveText('Add to cart');
+
+    await button.click();
+
+    //verify initial text remove
+    await expect(button).toHaveText('Remove');
+};
+
+
+//remove prodcut button
+async removeProduct(index:number){
+   const button = this.button.nth(index) 
+    
+   //verify initial text Remove to cart
+    await expect(button).toHaveText('Remove');
+
+    await button.click();
+
+    //verify initital text Add to cart 
+    await expect(button).toHaveText('Add to cart');
+};
+
+//add to cart 
+async addMultiProduct(count:number){
+    for (let i = 0; i < count; i++){
+        await this.addProduct(i);
+        await this.waitForNavigation('networkidle');
+    }
+
+};
+
+
+
+//SORT INVENTORY
+async sortInventory(option: 'az' | 'za' | 'hilo' | 'lohi' ) {
+    // const firstItemBefore = await this.inventoryItems.first().innerText() 
+    await this.sortDropdown.selectOption(option);
+    // await expect(this.inventoryItems.first()).not.toHaveText(firstItemBefore);
+}
+
+//veify sort inventory
+ 
+// async verifySort(locator:Locator, type: 'string' | 'number', order: 'asc' |'desc'){
+//     const values = await locator.allInnerTexts();
+
+//     const proceed = values.map(v => { 
+//        const lines = v.split('\n').map(l => l.trim()).filter(Boolean);
+
+//         if (type === 'number') {
+//             // extract price only
+//             const priceLine = lines.find(l => l.includes('$'))!;
+//             return parseFloat(priceLine.replace('$', ''));
+//         } else {
+//             // extract name only (first line)
+//             return lines[0];
+//         }
+    
+//     });
+
+//     console.log('UI names:', proceed )
+
+//     const sorted = [...proceed].sort((a , b) => {
+//         if (type === 'number') {
+//             return order === 'asc' ? 
+//             (a as number) - (b as number)  : (b as number) - (a as number);
+//         } else {
+//             const compare = (a as string).localeCompare(b as string, undefined, {sensitivity: 'base'}  )
+//             return order === 'asc' ? compare : -compare;
+            
+//         }
+     
+//     });   console.log('Expetected names: ',sorted)
+
+//      expect(proceed).toStrictEqual(sorted);
+    
+// }
+
+async verifySort(locator: Locator, order: 'asc' | 'desc') {
+
+    const values = await locator.allInnerTexts();
+
+    const proceed = values.map(v => { 
+       const lines = v.split('\n').map(l => l.trim()).filter(Boolean);
+        return lines[0];
+    });
+
+    console.log('UI names:', proceed);
+
+    const sorted = [...proceed].sort((a, b) => {
+        const compare = a.localeCompare(b, undefined, { sensitivity: 'base' });
+        return order === 'asc' ? compare : -compare;
+    });
+
+    console.log('Expected names:', sorted);
+
+    expect(proceed).toStrictEqual(sorted);
+}
+
+
 //click logout link
 async clickLogout(): Promise<void>{
     await this.openHamburgerMenu();
     await this.logoutLink.click();
     await this.waitForNavigation('networkidle');
 }
+
+
+
 
 
 

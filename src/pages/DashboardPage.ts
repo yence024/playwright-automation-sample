@@ -129,14 +129,23 @@ async verifySort(locator:Locator, type: 'string' | 'number', order: 'asc' |'desc
         }
     }); console.log('Expected values:', sort);
         
-
+    //assert that the sorted values match the expected order
     expect(sort).toEqual(proceed);
-           
-    //         
-   
-    
+      
 }
 
+
+//** Verify product detail 
+// age shows full information and actions. */
+async verifyProductDetail(index: number): Promise<void> {
+    await this.inventoryNames.nth(index).click();
+    await expect(this.page.locator('.inventory_details_name')).toBeVisible();
+    await expect(this.page.locator('.inventory_details_desc')).toBeVisible();
+    await expect(this.page.locator('.inventory_details_price')).toBeVisible();
+    await expect(this.page.locator('.inventory_details_back_button')).toBeVisible();
+    await expect(this.page.locator('.inventory_details_back_button')).toHaveText('Back to products');
+
+}
 
 
 

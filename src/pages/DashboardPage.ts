@@ -1,5 +1,5 @@
 import { BasePage } from "./BasePage";
-import {ELEMENT_WAIT} from '../utils/timeout';
+import {ELEMENT_WAIT, SHORT_WAIT} from '../utils/timeout';
 import {Page, Locator, expect} from "@playwright/test";
 import { listenerCount } from "node:cluster";
 
@@ -32,7 +32,7 @@ export class DashboardPage extends BasePage{
         this.cartBadge = page.locator('.shopping_cart_badge');
         this.sortDropdown = page.locator('.product_sort_container');
         this.itemPrice = page.locator('.inventory_item_price');
-        this.inventoryNames = page.locator('inventory_item_name');
+        this.inventoryNames = page.locator('.inventory_item_name ');
         this.inventoryItems = page.locator('.inventory_item');
     };
 
@@ -95,66 +95,49 @@ async addMultiProduct(count:number){
 async sortInventory(option: 'az' | 'za' | 'hilo' | 'lohi' ) {
     // const firstItemBefore = await this.inventoryItems.first().innerText() 
     await this.sortDropdown.selectOption(option);
+    
+
     // await expect(this.inventoryItems.first()).not.toHaveText(firstItemBefore);
 }
 
 //veify sort inventory
  
-// async verifySort(locator:Locator, type: 'string' | 'number', order: 'asc' |'desc'){
-//     const values = await locator.allInnerTexts();
-
-//     const proceed = values.map(v => { 
-//        const lines = v.split('\n').map(l => l.trim()).filter(Boolean);
-
-//         if (type === 'number') {
-//             // extract price only
-//             const priceLine = lines.find(l => l.includes('$'))!;
-//             return parseFloat(priceLine.replace('$', ''));
-//         } else {
-//             // extract name only (first line)
-//             return lines[0];
-//         }
-    
-//     });
-
-//     console.log('UI names:', proceed )
-
-//     const sorted = [...proceed].sort((a , b) => {
-//         if (type === 'number') {
-//             return order === 'asc' ? 
-//             (a as number) - (b as number)  : (b as number) - (a as number);
-//         } else {
-//             const compare = (a as string).localeCompare(b as string, undefined, {sensitivity: 'base'}  )
-//             return order === 'asc' ? compare : -compare;
-            
-//         }
-     
-//     });   console.log('Expetected names: ',sorted)
-
-//      expect(proceed).toStrictEqual(sorted);
-    
-// }
-
-async verifySort(locator: Locator, order: 'asc' | 'desc') {
-
+async verifySort(locator:Locator, type: 'string' | 'number', order: 'asc' |'desc'){
     const values = await locator.allInnerTexts();
+    
+    const proceed = values.map(v => {
+        const lines = v.split('\n').map(l => l.trim()).filter(Boolean);
+        if (type === 'number') {
+            const priceline = lines.find(l => l.includes('$'))!;
+                return parseFloat(priceline.replace('$', ''));
+        } else {
+            return lines[0];
+        }
+    })
+    console.log('UI values:', proceed);
 
-    const proceed = values.map(v => { 
-       const lines = v.split('\n').map(l => l.trim()).filter(Boolean);
-        return lines[0];
-    });
+    const sort = [...proceed].sort((a,b) => {
+        if (type === 'number'){
+            return order === 'asc' ? (a as number) - (b as number) : (b as number) - (a as number);
+        } else {
+            // return order === 'asc'? 
+            // (a as string).localeCompare(b as string, undefined, {sensitivity: 'base'}) 
+            // : (b as string).localeCompare(a as string, undefined, {sensitivity: 'base'});
+            const compare = (a as string).localeCompare(b as string, undefined, {sensitivity: 'base'}  )
+            return order === 'asc' ? compare : -compare;
+            
+        }
+    }); console.log('Expected values:', sort);
+        
 
-    console.log('UI names:', proceed);
-
-    const sorted = [...proceed].sort((a, b) => {
-        const compare = a.localeCompare(b, undefined, { sensitivity: 'base' });
-        return order === 'asc' ? compare : -compare;
-    });
-
-    console.log('Expected names:', sorted);
-
-    expect(proceed).toStrictEqual(sorted);
+    expect(sort).toEqual(proceed);
+           
+    //         
+   
+    
 }
+
+
 
 
 //click logout link
@@ -163,7 +146,6 @@ async clickLogout(): Promise<void>{
     await this.logoutLink.click();
     await this.waitForNavigation('networkidle');
 }
-
 
 
 

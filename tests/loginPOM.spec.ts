@@ -4,7 +4,10 @@ import { BasePage } from "../src/pages/BasePage";
 import { Loginpage } from "../src/pages/LoginPage";
 import { DashboardPage } from "../src/pages/DashboardPage";
 import { ELEMENT_WAIT } from "../src/utils/timeout";
-// validate login functionality using Page Object Model
+
+
+//**validate login functionality 
+// using Page Object Model */ 
 
 test.describe('Login flow', () =>{
     let loginPage: Loginpage;

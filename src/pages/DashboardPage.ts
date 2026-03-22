@@ -93,11 +93,9 @@ async addMultiProduct(count:number){
 
 //SORT INVENTORY
 async sortInventory(option: 'az' | 'za' | 'hilo' | 'lohi' ) {
-    // const firstItemBefore = await this.inventoryItems.first().innerText() 
+    const firstItemBefore = await this.inventoryItems.first().allTextContents() 
     await this.sortDropdown.selectOption(option);
-    
-
-    // await expect(this.inventoryItems.first()).not.toHaveText(firstItemBefore);
+    await expect(this.inventoryItems.first()).not.toHaveText(firstItemBefore);
 }
 
 //veify sort inventory

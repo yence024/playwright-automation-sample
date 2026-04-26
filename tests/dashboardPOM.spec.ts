@@ -135,30 +135,30 @@ test.describe('Dashboard flow', () =>{
     });
 
 //test case TC-014 - View Product Details
-    // test('Verify product detail page shows full information and actions.', async() => {
-    //     test.step('Click on a product image or name', async() => {
-    //         await dashboardPage.verifyProductDetail(0);
-    //         console.log('product detail page shows full information and actions');
+    test('Verify product detail page shows full information and actions.', async() => {
+        test.step('Click on a product image or name', async() => {
+            await dashboardPage.verifyProductDetail(0);
+            console.log('product detail page shows full information and actions');
 
-    //     });
+        });
 
-    //     await test.step('add Sauce Labs Backpack to cart : ',async() => {
+        await test.step('add Sauce Labs Backpack to cart : ',async() => {
             
-    //         //add to cart
-    //         await dashboardPage.addProduct(0);
-    //         console.log('product added to cart');
+            //add to cart
+            await dashboardPage.addProduct(0);
+            console.log('product added to cart');
             
-    //     });
-    //     await test.step('Remove Sauce Labs Backpack to cart : ',async() => {
+        });
+        await test.step('Remove Sauce Labs Backpack to cart : ',async() => {
             
-    //         //remove add to cart
-    //         await dashboardPage.removeProduct(0);
-    //         console.log('product removed from cart');
+            //remove add to cart
+            await dashboardPage.removeProduct(0);
+            console.log('product removed from cart');
             
-    //     });
+        });
 
         
 
-    // });
+    });
 
 });

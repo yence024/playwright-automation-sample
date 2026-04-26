@@ -41,7 +41,8 @@ export const testUsers = {
 //base_URL is config on playwrright.ts
 export const URLS = {
     LOGIN_PAGE: '/',
-    DASHBOARD_PAGE: '/inventory.html'
+    DASHBOARD_PAGE: '/inventory.html',
+    CART: '/cart.html'
 } as const;
 
 

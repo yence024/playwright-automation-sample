@@ -2,7 +2,7 @@ import {Page, test, expect} from '@playwright/test';
 import { EXPECTED_TEXT, testUsers, URLS } from '../src/data/testData';
 import { Loginpage } from '../src/pages/LoginPage';
 import { DashboardPage } from '../src/pages/DashboardPage';
-// import { sortHelper } from '../src/utils/sortHelper';
+import { SortHelper } from '../src/utils/sortHelper';
 // import {ELEMENT_WAIT} from '../src/utils/timeout';
 
 
@@ -12,12 +12,14 @@ import { DashboardPage } from '../src/pages/DashboardPage';
 test.describe('Dashboard flow', () =>{
     let loginPage: Loginpage;
     let dashboardPage: DashboardPage;
+    let sorthelper: SortHelper; 
     // let sorthelper: typeof sortHelper;
 
     //before each test - setup
     test.beforeEach(async ({page}: {page: Page}) => {
         loginPage = new Loginpage(page);
         dashboardPage = new DashboardPage(page);
+        sorthelper = new SortHelper();
         // sorthelper = sortHelper;
         await loginPage.goto(URLS.LOGIN_PAGE);
 
@@ -55,7 +57,7 @@ test.describe('Dashboard flow', () =>{
         });
 
         await test.step('Click Add to cart for Sauce Labs Backpack', async() => {
-            await dashboardPage.addProduct(1);
+            await dashboardPage.addProduct(0);
         });
 
 
@@ -74,7 +76,7 @@ test.describe('Dashboard flow', () =>{
             const cartCount = await dashboardPage.cartBadge.textContent();
             console.log('item Count:', cartCount);
 
-
+           
         });
     
     });
@@ -97,52 +99,40 @@ test.describe('Dashboard flow', () =>{
     });
 
 //test case TC-010 - Sort Products by Name (A-Z)
-    test('Verify alphabetical ascending sort.', async() => {
-        test.step('Open sort dropdown and  Select Name (A to Z)', async() => {
-            // const firstItembeforesort = await dashboardPage.inventoryItems.first().allTextContents();
+  test('Sort Products by Name (A-Z)', async() => {
+        await test.step('Verify alphabetical ascending sort.', async() =>{
             await dashboardPage.sortInventory('az');
-            // await expect(dashboardPage.inventoryItems.first()).not.toHaveText(firstItembeforesort);
-            // await sortHelper.verifySort(dashboardPage.inventoryItems, 'string', 'asc');
-            await dashboardPage.verifySort(dashboardPage.inventoryItems, 'string', 'asc');
-            console.log('names are sorted correctly A-Z')
-
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'string', 'asc');
         });
 
     });
 
 //test case TC-011 Sort Products by Name (Z-A)
-    test('verfiy alphabetical descending Sort', async() =>{
-        
-        test.step('Open sort dropdown and  Select Name (Z to A).', async() => {
-            
+    test('Sort Products by Name (Z-A)', async() => {
+        await test.step('Verify alphabetical descending sort.', async() =>{
             await dashboardPage.sortInventory('za');
-            await dashboardPage.verifySort(dashboardPage.inventoryItems, 'string', 'desc');
-            // await sortHelper.verifySort(dashboardPage.inventoryNames, 'string', 'desc');
-            console.log('names are sorted correctly Z-A');
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'string', 'desc');
         });
 
-    });    
+    });
 
 //test case TC-012 - Sort Products by Price (Low to High)
-    test('verify price low to high sort', async() =>{
-        test.step('Open sort dropdown and  Select Price (Low to High).', async() => {
+    test('Sort Products by Price (Low to High)', async() => {
+        await test.step('Verify price ascending sort.', async() =>{
             await dashboardPage.sortInventory('lohi');
-            await dashboardPage.verifySort(dashboardPage.inventoryItems, 'number', 'asc');
-            // await sorthelper.verifySort(dashboardPage.inventoryItems, 'number', 'asc');
-            console.log('price are sorted correctly low to high');
-           
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'number', 'asc');
         });
+
     });
 
 //test case TC-013 - Sort Products by Price (High to Low)
-    test('Open sort dropdown and  Select Price (High to Low).', async() => {
-        test.step('Open sort dropdown and  Select Price (High to Low).', async() => {
+     test('Sort Products by Price (High to Low)', async() => {
+        await test.step('Verify price descending sort.', async() =>{
             await dashboardPage.sortInventory('hilo');
-            // await sorthelper.verifySort(dashboardPage.inventoryItems, 'number', 'desc');
-            await dashboardPage.verifySort(dashboardPage.inventoryItems, 'number', 'desc');
-            console.log('price are sorted correctly high to low');  
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'number', 'desc');
         });
-    });   
+
+    });
 
 //test case TC-014 - View Product Details
     // test('Verify product detail page shows full information and actions.', async() => {

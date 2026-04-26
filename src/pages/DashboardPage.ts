@@ -1,7 +1,8 @@
 import { BasePage } from "./BasePage";
 import {ELEMENT_WAIT, SHORT_WAIT} from '../utils/timeout';
 import {Page, Locator, expect} from "@playwright/test";
-import { listenerCount } from "node:cluster";
+import { SortHelper } from "../utils/sortHelper";
+
 
 //DashboardPage - POM
 
@@ -19,6 +20,7 @@ export class DashboardPage extends BasePage{
     readonly sortDropdown: Locator;
     readonly itemPrice: Locator;
     readonly inventoryNames: Locator;
+    readonly cartItemName: Locator;
 
 //constructor to initialize the locators
     constructor(page: Page){
@@ -34,6 +36,7 @@ export class DashboardPage extends BasePage{
         this.itemPrice = page.locator('.inventory_item_price');
         this.inventoryNames = page.locator('.inventory_item_name ');
         this.inventoryItems = page.locator('.inventory_item');
+        this.cartItemName = page.locator('.cart_item_name');    
     };
 
 //open hamburger menu
@@ -92,45 +95,11 @@ async addMultiProduct(count:number){
 
 
 //SORT INVENTORY
-async sortInventory(option: 'az' | 'za' | 'hilo' | 'lohi' ) {
-    const firstItemBefore = await this.inventoryItems.first().allTextContents() 
+async sortInventory(option: 'az' | 'za' | 'lohi' | 'hilo') {
     await this.sortDropdown.selectOption(option);
-    // await expect(this.inventoryItems.first()).not.toHaveText(firstItemBefore);
 }
 
-//veify sort inventory
- 
-async verifySort(locator:Locator, type: 'string' | 'number', order: 'asc' |'desc'){
-    const values = await locator.allInnerTexts();
-    
-    const proceed = values.map(v => {
-        const lines = v.split('\n').map(l => l.trim()).filter(Boolean);
-        if (type === 'number') {
-            const priceline = lines.find(l => l.includes('$'))!;
-                return parseFloat(priceline.replace('$', ''));
-        } else {
-            return lines[0];
-        }
-    })
-    console.log('UI values:', proceed);
 
-    const sort = [...proceed].sort((a,b) => {
-        if (type === 'number'){
-            return order === 'asc' ? (a as number) - (b as number) : (b as number) - (a as number);
-        } else {
-            // return order === 'asc'? 
-            // (a as string).localeCompare(b as string, undefined, {sensitivity: 'base'}) 
-            // : (b as string).localeCompare(a as string, undefined, {sensitivity: 'base'});
-            const compare = (a as string).localeCompare(b as string, undefined, {sensitivity: 'base'}  )
-            return order === 'asc' ? compare : -compare;
-            
-        }
-    }); console.log('Expected values:', sort);
-        
-    //assert that the sorted values match the expected order
-    expect(sort).toEqual(proceed);
-      
-}
 
 
 //** Verify product detail 

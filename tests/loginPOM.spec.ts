@@ -1,8 +1,5 @@
-import {Page, test, expect} from "@playwright/test";
+import {test, expect} from '@fixtures/login.fixture';
 import { EXPECTED_TEXT, testUsers, URLS } from "../src/data/testData";
-import { BasePage } from "../src/pages/BasePage";
-import { Loginpage } from "../src/pages/LoginPage";
-import { DashboardPage } from "../src/pages/DashboardPage";
 import { ELEMENT_WAIT } from "../src/utils/timeout";
 
 
@@ -10,30 +7,21 @@ import { ELEMENT_WAIT } from "../src/utils/timeout";
 // using Page Object Model */ 
 
 test.describe('Login flow', () =>{
-    let loginPage: Loginpage;
-    let dashboardPage: DashboardPage;
+    // let loginPage: Loginpage;
+    // let dashboardPage: DashboardPage;
 
-    //before each test - setup
-    test.beforeEach(async ({page}: {page: Page}) => {
-        loginPage = new Loginpage(page);
-        dashboardPage = new DashboardPage(page);    
-        await loginPage.goto(URLS.LOGIN_PAGE);
-    })
+    // //before each test - setup
+    // test.beforeEach(async ({page}: {page: Page}) => {
+    //     loginPage = new Loginpage(page);
+    //     dashboardPage = new DashboardPage(page);    
+    //     await loginPage.goto(URLS.LOGIN_PAGE);
+    // })
 
-// test(`should login succesfully, verify dashboard, and logout with `, async () => {
-//     console.log(testUsers.allUsers, 'testUsers.allUsers');
-// })
-
-
-//test login , dashboard verification and logout
-
-
-// for (const user of testUser.allUsers) - this loop through all user without verifying the locked out user
 
 // Arrange - login page object and dashboard page object
 // const validUsers = testUsers.allUsers.filter(user =>user.username !== 'locked_out_user' );
 for (const user of testUsers.allUsers) {
-    test(`should login succesfully, verify dashboard, and logout with ${user.username} `, async () => {
+    test(`should login succesfully, verify dashboard, and logout with ${user.username} `, async ({ loginPage, dashboardPage }) => {
         await test.step('Arrange - get credentials', async () =>{
         });
         //Act - perform login action

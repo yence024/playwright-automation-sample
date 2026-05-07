@@ -1,3 +1,4 @@
+
 export interface User {
     username: string;
     password: string;
@@ -5,27 +6,27 @@ export interface User {
 
 export const USERS: User[] = [
     {
-        username: 'standard_user',
-        password: 'secret_sauce'
+        username: process.env.STANDARD_USER!,
+        password: process.env.STANDARD_PASSWORD!
     },
     {
-        username: 'locked_out_user',
-        password: 'secret_sauce'  
+        username: process.env.LOCKED_OUT_USER!,
+        password: process.env.LOCKED_OUT_PASSWORD!
     },
     {
-        username: 'problem_user',
-        password: 'secret_sauce'  
+        username: process.env.PROBLEM_USER!,
+        password: process.env.PROBLEM_PASSWORD!
     },
     {
-        username: 'performance_glitch_user',
-        password: 'secret_sauce'  
+        username: process.env.PERFORMANCE_GLITCH_USER!,
+        password: process.env.PERFORMANCE_GLITCH_PASSWORD!
     },
     {
-        username: 'error_user',
-        password: 'secret_sauce'  
+        username: process.env.ERROR_USER!,
+        password: process.env.ERROR_PASSWORD!
     },
     {
-        username: 'visual_user',
-        password: 'secret_sauce'  
+        username: process.env.VISUAL_USER!,
+        password: process.env.VISUAL_PASSWORD!
     }
 ]

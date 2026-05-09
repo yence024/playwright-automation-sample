@@ -1,7 +1,7 @@
 import { BasePage } from "./BasePage";
 import {ELEMENT_WAIT, SHORT_WAIT} from '../utils/timeout';
 import {Page, Locator, expect} from "@playwright/test";
-import { SortHelper } from "../utils/sortHelper";
+
 
 
 //DashboardPage - POM
@@ -29,7 +29,7 @@ export class DashboardPage extends BasePage{
         this.applogo = page.locator('.app_logo');
         this.hamburgerMenu = page.locator('#react-burger-menu-btn');
         this.logoutLink = page.locator('#logout_sidebar_link');
-        this.cart = page.locator('#shopping_cart_link > a');
+        this.cart = page.locator('.shopping_cart_link');
         this.button = page.locator('.btn_inventory');
         this.cartBadge = page.locator('.shopping_cart_badge');
         this.sortDropdown = page.locator('.product_sort_container');
@@ -87,7 +87,6 @@ async removeProduct(index:number){
 async addMultiProduct(count:number){
     for (let i = 0; i < count; i++){
         await this.addProduct(i);
-        await this.waitForNavigation('networkidle');
     }
 
 };

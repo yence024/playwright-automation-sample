@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "types": ["node"],
     "target": "ES2020",
     "module": "NodeNext",
     "lib": ["ES2020", "DOM"],

@@ -1,4 +1,4 @@
-import {test, expect} from '@fixtures/login.fixture';
+import {test, expect} from '@fixtures/login.fixtures';
 import { EXPECTED_TEXT, testUsers, URLS } from "../src/data/testData";
 import { ELEMENT_WAIT } from "../src/utils/timeout";
 

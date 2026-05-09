@@ -1,11 +1,14 @@
 import {test as base, expect} from '@playwright/test';
 import { Loginpage } from '@pages/LoginPage';
 import { DashboardPage } from '@pages/DashboardPage';
-import { URLS } from '@data/testData'; 
+import { CartPage } from '@pages/CartPage';
+import { URLS} from '@data/testData'; 
+
 
 type LoginFixtures = {
   loginPage: Loginpage;
   dashboardPage: DashboardPage;
+  cartPage: CartPage;
 };
 
 export const test = base.extend<LoginFixtures>({

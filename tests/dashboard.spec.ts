@@ -1,5 +1,5 @@
 import {Page, test, expect} from '@playwright/test';
-import { EXPECTED_TEXT, testUsers, URLS } from '../src/data/testData';
+import { testUsers, URLS } from '../src/data/testData';
 import { Loginpage } from '../src/pages/LoginPage';
 import { DashboardPage } from '../src/pages/DashboardPage';
 import { SortHelper } from '../src/utils/sortHelper';
@@ -25,11 +25,8 @@ test.describe('Dashboard flow', () =>{
 
         //Pre-condition - Login to dasahboard using 'standard_user'
         const user = testUsers.allUsers[0];//standard_user
-        await test.step('Act - perform Login', async () =>{
-        //Act - perform login action
-        await loginPage.login(user.username, user.password);    
-        
-        });
+        await loginPage.login(user.username, user.password); 
+   
     });
 
 

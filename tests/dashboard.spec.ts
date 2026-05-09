@@ -1,42 +1,164 @@
-import {test, expect} from '@playwright/test';
+import {Page, test, expect} from '@playwright/test';
+import { EXPECTED_TEXT, testUsers, URLS } from '../src/data/testData';
+import { Loginpage } from '../src/pages/LoginPage';
+import { DashboardPage } from '../src/pages/DashboardPage';
+import { SortHelper } from '../src/utils/sortHelper';
+// import {ELEMENT_WAIT} from '../src/utils/timeout';
 
 
-test.describe('dashobard flow', () =>{
-    test('Dashboard loads correctly', async({page}) =>{
+//**validate dashboard elements
+//  using Page Object Model*/
 
-        //step 1: got login page
-        await page.goto('https://www.saucedemo.com/');
+test.describe('Dashboard flow', () =>{
+    let loginPage: Loginpage;
+    let dashboardPage: DashboardPage;
+    let sorthelper: SortHelper; 
+    // let sorthelper: typeof sortHelper;
 
-        //steps 2-3: fill the usernamne - hardcoded  xpath selector
-        await page.locator('xpath=//input[@id="user-name"]').fill('standard_user');
+    //before each test - setup
+    test.beforeEach(async ({page}: {page: Page}) => {
+        loginPage = new Loginpage(page);
+        dashboardPage = new DashboardPage(page);
+        sorthelper = new SortHelper();
+        // sorthelper = sortHelper;
+        await loginPage.goto(URLS.LOGIN_PAGE);
 
-        //step 4-5: fill the password - hardcoded xpath selector
-        await page.locator('xpath=//input[@id="password"]').fill('secret_sauce');
-
-        //step 6 click login button - hardcoded xpath
-        await page.locator('xpath=//input[@id="login-button"]').click();
-
-        //step 7 wait for navigation
-        await page.waitForLoadState('networkidle');
-
-        //step 8 Verify URL contains inventory page - hardcorded URL
-        await expect(page).toHaveURL(/inventory\.html/);
-
-        //step 9-10: Verify product title is visible - hardcoded xpath
-        await expect(page.locator('xpath=//span[@class="title"]')).toBeVisible({timeout:3000});
-        await expect(page.locator('xpath=//span[@class="title"]')).toContainText('Products');
+        //Pre-condition - Login to dasahboard using 'standard_user'
+        const user = testUsers.allUsers[0];//standard_user
+        await test.step('Act - perform Login', async () =>{
+        //Act - perform login action
+        await loginPage.login(user.username, user.password);    
         
-        //step 11 Verify product list is displayed
-        await expect(page.locator('xpath=//div[@class="inventory_list"]')).toBeVisible({timeout:3000});
-        const product = page.locator('xpath=//div[@class="inventory_list"]');
-        const count = await product.count();
-        expect(count).toBeGreaterThan(0);
+        });
+    });
 
 
+//test case TC-006 - validate dashboard elements and Assert product count==6; iterate over product cards
+    test('should load dashboard elements correctly', async () => {
+        await test.step('Verify all product items and mandatory attributes are displayed.', async () =>{
+            const count = await dashboardPage.inventoryItems.count();
+             expect(count).toBe(6);
+        
+            //loop to count dashboard product
+             for(let i=0; i < count; i++){
+                await expect(dashboardPage.inventoryItems.nth(i)).toBeVisible();
+            }
+            console.log('Assert product count: ',count,'iterate over product cards:');
+        });
+
+    });
+
+//test case TC-007 - validate add to cart functionality    
+    test('Verify adding one product updates UI and cart.', async () => {
+
+        await test.step('Confirm cart badge is not visible or is 0', async() => {
+            //**checking cart number */
+             expect(await dashboardPage.cartBadge.count()).toBe(0);    
+        });
+
+        await test.step('Click Add to cart for Sauce Labs Backpack', async() => {
+            await dashboardPage.addProduct(0);
+        });
 
 
+        await test.step('Badge may hide when 0; check visibility before/after',async() => {
+             await expect(dashboardPage.cartBadge).toHaveText('1');
 
-    })
+          });  
 
-   
-})
+    });
+
+//tet case TC-008 - Add Multiple Products to Cart
+    test('Verify adding multiple items accumulates correctly:', async() => {
+        await test.step('add to cart 3 product: ',async() => {
+            await dashboardPage.addMultiProduct(3);
+
+            const cartCount = await dashboardPage.cartBadge.textContent();
+            console.log('item Count:', cartCount);
+
+           
+        });
+    
+    });
+
+//test case TC-009 - Remove Product from Cart
+    test('Verify removing an item updates both product card and cart badge.', async() =>{
+        await test.step('add Sauce Labs Backpack to cart : ',async() => {
+            
+            //add to cart
+            await dashboardPage.addProduct(0);
+            
+        });
+        await test.step('Remove Sauce Labs Backpack to cart : ',async() => {
+            
+            //remove add to cart
+            await dashboardPage.removeProduct(0);
+            
+        });
+
+    });
+
+//test case TC-010 - Sort Products by Name (A-Z)
+  test('Sort Products by Name (A-Z)', async() => {
+        await test.step('Verify alphabetical ascending sort.', async() =>{
+            await dashboardPage.sortInventory('az');
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'string', 'asc');
+        });
+
+    });
+
+//test case TC-011 Sort Products by Name (Z-A)
+    test('Sort Products by Name (Z-A)', async() => {
+        await test.step('Verify alphabetical descending sort.', async() =>{
+            await dashboardPage.sortInventory('za');
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'string', 'desc');
+        });
+
+    });
+
+//test case TC-012 - Sort Products by Price (Low to High)
+    test('Sort Products by Price (Low to High)', async() => {
+        await test.step('Verify price ascending sort.', async() =>{
+            await dashboardPage.sortInventory('lohi');
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'number', 'asc');
+        });
+
+    });
+
+//test case TC-013 - Sort Products by Price (High to Low)
+     test('Sort Products by Price (High to Low)', async() => {
+        await test.step('Verify price descending sort.', async() =>{
+            await dashboardPage.sortInventory('hilo');
+           await sorthelper.verifySort(dashboardPage.inventoryItems, 'number', 'desc');
+        });
+
+    });
+
+//test case TC-014 - View Product Details
+    test('Verify product detail page shows full information and actions.', async() => {
+        test.step('Click on a product image or name', async() => {
+            await dashboardPage.verifyProductDetail(0);
+            console.log('product detail page shows full information and actions');
+
+        });
+
+        await test.step('add Sauce Labs Backpack to cart : ',async() => {
+            
+            //add to cart
+            await dashboardPage.addProduct(0);
+            console.log('product added to cart');
+            
+        });
+        await test.step('Remove Sauce Labs Backpack to cart : ',async() => {
+            
+            //remove add to cart
+            await dashboardPage.removeProduct(0);
+            console.log('product removed from cart');
+            
+        });
+
+        
+
+    });
+
+});

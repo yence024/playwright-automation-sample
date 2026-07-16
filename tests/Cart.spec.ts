@@ -1,5 +1,4 @@
 import { test, expect } from '@fixtures/cart.fixture';
-import { ELEMENT_WAIT } from "../src/utils/timeout";
 
 //**Validate Cart Page
 // using Page Object Model */
@@ -14,7 +13,7 @@ test.describe('Cart flow', () => {
         });
 
         await test.step('Cart page displays with header Your Cart', async () => {
-            await expect(cartPage.cartTitle).toBeVisible({ timeout: ELEMENT_WAIT });
+            await expect(cartPage.cartTitle).toBeVisible();
         });
 
         await test.step('All added items listed with quantity', async () => {
@@ -39,7 +38,7 @@ test.describe('Cart flow', () => {
         });
         await test.step('Click Continue Shopping', async () => {
             await cartPage.clickContinueShopping();
-            await expect(dashboardPage.title).toBeVisible({ timeout: ELEMENT_WAIT });
+            await expect(dashboardPage.title).toBeVisible();
         });
     });
 });

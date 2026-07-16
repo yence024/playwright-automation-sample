@@ -1,6 +1,5 @@
 import {test, expect} from '@fixtures/login.fixtures';
 import { EXPECTED_TEXT, testUsers, URLS } from "../src/data/testData";
-import { ELEMENT_WAIT } from "../src/utils/timeout";
 
 
 //**validate login functionality 
@@ -43,7 +42,7 @@ for (const user of testUsers.allUsers) {
     
 
         //verfiy Dashboard Elements
-        await expect(dashboardPage.title).toBeVisible({ timeout:ELEMENT_WAIT });
+        await expect(dashboardPage.title).toBeVisible();
         await expect(dashboardPage.title).toHaveText(EXPECTED_TEXT.DASHBOARD_TITLE);
         await expect(dashboardPage.applogo).toBeVisible();
         await expect(dashboardPage.applogo).toHaveText(EXPECTED_TEXT.APP_LOGO);
@@ -56,7 +55,7 @@ for (const user of testUsers.allUsers) {
         });
 
         //verify login is visible after logout
-        await expect(loginPage.usernameInput).toBeVisible({timeout:ELEMENT_WAIT});
+        await expect(loginPage.usernameInput).toBeVisible();
         await expect(loginPage.passwordInput).toBeVisible();
         await expect(loginPage.loginButton).toBeVisible();
         

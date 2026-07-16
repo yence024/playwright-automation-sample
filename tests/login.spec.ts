@@ -1,6 +1,5 @@
 import { test, expect } from '@fixtures/login.fixtures';
 import { EXPECTED_TEXT, URLS, testUsers } from '../src/data/testData';
-import { ELEMENT_WAIT } from '../src/utils/timeout';
 
 
 test.describe('Login flow', () => {
@@ -24,7 +23,7 @@ test.describe('Login flow', () => {
 
         await test.step('Assert - login form is visible again', async () => {
             await loginPage.expectLoginFormVisible();
-            await expect(loginPage.page).toHaveURL(URLS.LOGIN_PAGE, { timeout: ELEMENT_WAIT });
+            await expect(loginPage.page).toHaveURL(URLS.LOGIN_PAGE);
         });
     });
 

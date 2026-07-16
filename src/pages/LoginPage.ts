@@ -1,6 +1,5 @@
 import { Page, expect, Locator } from "@playwright/test";
 import { BasePage } from "./BasePage";
-import { ELEMENT_WAIT } from "../utils/timeout";
 
 //LoginPage - POM
 
@@ -40,19 +39,17 @@ export class Loginpage extends BasePage {
         await this.fillUsername(username);
         await this.fillPassword(password);
         await this.clickLogin();
-        await this.page.waitForLoadState('domcontentloaded');
-        await this.waitForUrl(/inventory\.html/, ELEMENT_WAIT).catch(() => undefined);
     }
 
     //lockout user error message
     async expectLockedOuterror(): Promise<void> {
-        await expect(this.errorMessage).toBeVisible({ timeout: ELEMENT_WAIT });
+        await expect(this.errorMessage).toBeVisible();
         await expect(this.errorMessage).toContainText('Sorry, this user has been locked out.');
     }
 
     async expectLoginFormVisible(): Promise<void> {
-        await expect(this.usernameInput).toBeVisible({ timeout: ELEMENT_WAIT });
-        await expect(this.passwordInput).toBeVisible({ timeout: ELEMENT_WAIT });
-        await expect(this.loginButton).toBeVisible({ timeout: ELEMENT_WAIT });
+        await expect(this.usernameInput).toBeVisible();
+        await expect(this.passwordInput).toBeVisible();
+        await expect(this.loginButton).toBeVisible();
     }
 }

@@ -1,5 +1,4 @@
 import { BasePage } from "./BasePage";
-import { ELEMENT_WAIT } from '../utils/timeout';
 import { Page, Locator, expect } from "@playwright/test";
 
 
@@ -42,13 +41,12 @@ export class DashboardPage extends BasePage{
 //open hamburger menu
 async openHamburgerMenu(): Promise<void> {
     await this.click(this.hamburgerMenu);
-    await this.logoutLink.waitFor({ state: 'visible', timeout: ELEMENT_WAIT });
+    await expect(this.logoutLink).toBeVisible();
 }
 
 //cart button
 async clickCart(): Promise<void> {
     await this.click(this.cart);
-    await this.waitForNavigation('networkidle');
 }
 
 async shoppingCartBridge(): Promise<void> {
@@ -114,9 +112,9 @@ async verifyProductDetail(index: number): Promise<void> {
 
 
 async expectDashboardLoaded(): Promise<void> {
-    await expect(this.title).toBeVisible({ timeout: ELEMENT_WAIT });
-    await expect(this.applogo).toBeVisible({ timeout: ELEMENT_WAIT });
-    await expect(this.hamburgerMenu).toBeVisible({ timeout: ELEMENT_WAIT });
+    await expect(this.title).toBeVisible();
+    await expect(this.applogo).toBeVisible();
+    await expect(this.hamburgerMenu).toBeVisible();
 }
 
 async expectCartBadgeCount(expectedCount: string | number): Promise<void> {
@@ -127,7 +125,6 @@ async expectCartBadgeCount(expectedCount: string | number): Promise<void> {
 async clickLogout(): Promise<void> {
     await this.openHamburgerMenu();
     await this.click(this.logoutLink);
-    await this.waitForNavigation('networkidle');
 }
 
 

@@ -1,7 +1,6 @@
 //**contains all the common methods shared all page objects
 // all pages object should extend this base class for consistency and reusability */
 import { expect, Page, Locator } from '@playwright/test';
-import { ELEMENT_WAIT } from '../utils/timeout';
 
 export class BasePage {
     readonly page: Page;
@@ -35,18 +34,18 @@ export class BasePage {
         await this.page.waitForLoadState(waitUntil);
     }
 
-    async click(locator: Locator, timeout: number = ELEMENT_WAIT): Promise<void> {
-        await expect(locator).toBeVisible({ timeout });
+    async click(locator: Locator): Promise<void> {
+        await expect(locator).toBeVisible();
         await locator.click();
     }
 
-    async type(locator: Locator, value: string, timeout: number = ELEMENT_WAIT): Promise<void> {
-        await expect(locator).toBeVisible({ timeout });
+    async type(locator: Locator, value: string): Promise<void> {
+        await expect(locator).toBeVisible();
         await locator.fill(value);
     }
 
-    async waitForUrl(pattern: RegExp | string, timeout: number = ELEMENT_WAIT): Promise<void> {
-        await this.page.waitForURL(pattern, { timeout });
+    async waitForUrl(pattern: RegExp | string): Promise<void> {
+        await this.page.waitForURL(pattern);
     }
 }
 

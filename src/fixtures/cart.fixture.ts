@@ -12,27 +12,20 @@ type Fixtures = {
 };
 
 export const test = base.extend<Fixtures>({
-  
-  cartPage: async ({ page }, use) => {
-
+  cartPage: async ({ page, dashboardPage }, use) => {
     const loginPage = new Loginpage(page);
-    const dashboardPage = new DashboardPage(page);
     const cartPage = new CartPage(page);
 
     await loginPage.goto(URLS.LOGIN_PAGE);
 
     const user = testUsers.allUsers[0];
-
     await loginPage.login(user.username, user.password);
-
-    await dashboardPage.clickCart();
 
     await use(cartPage);
   },
 
   dashboardPage: async ({ page }, use) => {
     const dashboardPage = new DashboardPage(page);
-
     await use(dashboardPage);
   },
 });

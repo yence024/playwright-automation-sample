@@ -23,10 +23,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
           cache: 'npm'
@@ -56,7 +56,7 @@ jobs:
           node -e "const fs=require('fs'); const path='test-results/junit.xml'; let tests=0, failures=0, skipped=0, errors=0; if (fs.existsSync(path)) { const xml=fs.readFileSync(path,'utf8'); const attr=(name)=>{ const m=xml.match(new RegExp(name+'=\"(\\d+)\"')); return m?Number(m[1]):0; }; tests=attr('tests'); failures=attr('failures'); skipped=attr('skipped'); errors=attr('errors'); } const passed=Math.max(tests-failures-errors-skipped,0); const status=(failures+errors)>0?'FAILED':'PASSED'; const runUrl='https://github.com/'+process.env.REPOSITORY+'/actions/runs/'+process.env.RUN_ID; const lines=['## Playwright CI Summary','',`- Status: **${status}**`,`- Total: ${tests}`,`- Passed: ${passed}`,`- Failed: ${failures+errors}`,`- Skipped: ${skipped}`,'',`Artifacts in this run: ${runUrl}`,'- `playwright-report` (HTML report)','- `test-results` (JUnit, traces, screenshots, videos)']; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n')+'\n');"
 
       - name: Upload Playwright HTML report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: playwright-report
@@ -64,7 +64,7 @@ jobs:
           retention-days: 14
 
       - name: Upload test results and traces
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: test-results

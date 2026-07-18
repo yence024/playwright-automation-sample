@@ -21,6 +21,11 @@ export const test = base.extend<LoginFixtures>({
     dashboardPage: async ({ page }, use) => {
         const dashboardPage = new DashboardPage(page);
         await use(dashboardPage);
+    },
+
+    cartPage: async ({ page }, use) => {
+        const cartPage = new CartPage(page);
+        await use(cartPage);
     }
 
 });

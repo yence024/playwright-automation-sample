@@ -3,39 +3,71 @@ name: Playwright Tests
 on:
   push:
     branches:
-      - main
-    
+      - '**'
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
+concurrency:
+  group: playwright-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
+    name: E2E Tests (Chromium)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
-      
+          cache: 'npm'
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Install playwright browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify Playwright and browser setup
+        run: |
+          npx playwright --version
+          npx playwright install --dry-run chromium
 
       - name: Run Playwright tests
-        run: npx playwright test --retries=3 
+        env:
+          CI: true
+        run: npx playwright test --project=chromium
 
-      - name: Upload Playwright Report
-        uses: actions/upload-artifact@v4
+      - name: Publish CI summary
+        if: always()
+        env:
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          node -e "const fs=require('fs'); const path='test-results/junit.xml'; let tests=0, failures=0, skipped=0, errors=0; if (fs.existsSync(path)) { const xml=fs.readFileSync(path,'utf8'); const attr=(name)=>{ const m=xml.match(new RegExp(name+'=\"(\\d+)\"')); return m?Number(m[1]):0; }; tests=attr('tests'); failures=attr('failures'); skipped=attr('skipped'); errors=attr('errors'); } const passed=Math.max(tests-failures-errors-skipped,0); const status=(failures+errors)>0?'FAILED':'PASSED'; const runUrl='https://github.com/'+process.env.REPOSITORY+'/actions/runs/'+process.env.RUN_ID; const lines=['## Playwright CI Summary','',`- Status: **${status}**`,`- Total: ${tests}`,`- Passed: ${passed}`,`- Failed: ${failures+errors}`,`- Skipped: ${skipped}`,'',`Artifacts in this run: ${runUrl}`,'- `playwright-report` (HTML report)','- `test-results` (JUnit, traces, screenshots, videos)']; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n')+'\n');"
+
+      - name: Upload Playwright HTML report
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 14
+
+      - name: Upload test results and traces
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: test-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 14

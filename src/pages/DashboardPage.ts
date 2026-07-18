@@ -1,6 +1,5 @@
 import { BasePage } from "./BasePage";
-import {ELEMENT_WAIT, SHORT_WAIT} from '../utils/timeout';
-import {Page, Locator, expect} from "@playwright/test";
+import { Page, Locator, expect } from "@playwright/test";
 
 
 
@@ -34,54 +33,51 @@ export class DashboardPage extends BasePage{
         this.cartBadge = page.locator('.shopping_cart_badge');
         this.sortDropdown = page.locator('.product_sort_container');
         this.itemPrice = page.locator('.inventory_item_price');
-        this.inventoryNames = page.locator('.inventory_item_name ');
+        this.inventoryNames = page.locator('.inventory_item_name');
         this.inventoryItems = page.locator('.inventory_item');
-        this.cartItemName = page.locator('.cart_item_name');    
+        this.cartItemName = page.locator('.cart_item_name');
     };
 
 //open hamburger menu
-async openHamburgerMenu(): Promise<void>{
-    await this.hamburgerMenu.click();
-    await this.logoutLink.waitFor({ state: 'visible', timeout: ELEMENT_WAIT });
-};
+async openHamburgerMenu(): Promise<void> {
+    await this.click(this.hamburgerMenu);
+    await expect(this.logoutLink).toBeVisible();
+}
 
-
-//cartbutton
-async clickCart(): Promise<void>{
-    await this.cart.click();
-    await this.waitForNavigation('networkidle');
-};
+//cart button
+async clickCart(): Promise<void> {
+    await this.click(this.cart);
+}
 
 async shoppingCartBridge(): Promise<void> {
 
 }
 
 //add product button
-async addProduct(index: number){
+async addProduct(index: number): Promise<void> {
     const button = this.button.nth(index);
 
     //verify initial text add to cart
     await expect(button).toHaveText('Add to cart');
 
-    await button.click();
+    await this.click(button);
 
     //verify initial text remove
     await expect(button).toHaveText('Remove');
-};
+}
 
+//remove product button
+async removeProduct(index: number): Promise<void> {
+    const button = this.button.nth(index);
 
-//remove prodcut button
-async removeProduct(index:number){
-   const button = this.button.nth(index) 
-    
-   //verify initial text Remove to cart
+    //verify initial text Remove to cart
     await expect(button).toHaveText('Remove');
 
-    await button.click();
+    await this.click(button);
 
-    //verify initital text Add to cart 
+    //verify initial text Add to cart
     await expect(button).toHaveText('Add to cart');
-};
+}
 
 //add to cart 
 async addMultiProduct(count:number){
@@ -115,11 +111,20 @@ async verifyProductDetail(index: number): Promise<void> {
 
 
 
+async expectDashboardLoaded(): Promise<void> {
+    await expect(this.title).toBeVisible();
+    await expect(this.applogo).toBeVisible();
+    await expect(this.hamburgerMenu).toBeVisible();
+}
+
+async expectCartBadgeCount(expectedCount: string | number): Promise<void> {
+    await expect(this.cartBadge).toHaveText(String(expectedCount));
+}
+
 //click logout link
-async clickLogout(): Promise<void>{
+async clickLogout(): Promise<void> {
     await this.openHamburgerMenu();
-    await this.logoutLink.click();
-    await this.waitForNavigation('networkidle');
+    await this.click(this.logoutLink);
 }
 
 

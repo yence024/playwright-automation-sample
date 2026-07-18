@@ -1,62 +1,41 @@
-import {test, expect} from '@playwright/test';
+import { test, expect } from '@fixtures/login.fixtures';
+import { EXPECTED_TEXT, URLS, testUsers } from '../src/data/testData';
 
 
-test.describe('Login flow', () =>{
-    test('Successful Login with Standard User', async ({page}) =>{
-        
-        //step 1: go to login page
-        await page.goto('/');
+test.describe('Login flow', () => {
+    test('Successful Login with Standard User', async ({ loginPage, dashboardPage }) => {
+        const user = testUsers.allUsers[0];
 
-        //step 2 -3: fill the username - hardcorded xpath selector
-        await page.locator('xpath=//input[@id="user-name"]').fill('standard_user');
+        await test.step('Act - perform login', async () => {
+            await loginPage.login(user.username, user.password);
+        });
 
-        //step 4 - 5: fill the password - hardcorded xpath selector
-        await page.locator('xpath=//input[@id="password"]').fill('secret_sauce');
+        await test.step('Assert - dashboard is available', async () => {
+            await expect(loginPage.page).toHaveURL(URLS.DASHBOARD_PAGE);
+            await dashboardPage.expectDashboardLoaded();
+            await expect(dashboardPage.title).toHaveText(EXPECTED_TEXT.DASHBOARD_TITLE);
+            await expect(dashboardPage.applogo).toHaveText(EXPECTED_TEXT.APP_LOGO);
+        });
 
-        //step 6: click login button - hardcorded xpath selector
-        await page.locator('xpath=//input[@id="login-button"]').click();
-        
-        //step 7: wait for navigation
-        await page.waitForLoadState('networkidle');
+        await test.step('Act - perform logout', async () => {
+            await dashboardPage.clickLogout();
+        });
 
-        //step 8: Verify login was successfully  - hardcoded URL
-        await expect(page).toHaveURL(/inventory\.html/);
+        await test.step('Assert - login form is visible again', async () => {
+            await loginPage.expectLoginFormVisible();
+            await expect(loginPage.page).toHaveURL(URLS.LOGIN_PAGE);
+        });
+    });
 
-        //step 9: verify product title is visible - harcoded xpath selector and text
-        await expect(page.locator('xpath=//span[@class="title"]')).toBeVisible({timeout:3000});
-        await expect(page.locator('xpath=//span[@class="title"]')).toContainText('Products');
+    test('Login with Locked Out User', async ({ loginPage }) => {
+        const user = testUsers.allUsers[1];
 
-        //step 10: verify app logo - hardcoded  xpath selector and text
-        await expect(page.locator('//div[@class="app_logo"]')).toBeVisible();
-        await expect(page.locator('//div[@class="app_logo"]')).toContainText('Swag Labs');
+        await test.step('Act - perform login', async () => {
+            await loginPage.login(user.username, user.password);
+        });
 
-        //step 11: verify menu button exist
-        await expect(page.locator('xpath=//button[@id="react-burger-menu-btn"]')).toBeVisible();
-
-        //step 11: perform logout
-        await page.locator('xpath=//button[@id="react-burger-menu-btn"]').click();
-
-        //step 12: wait for navigation
-        await page.locator('xpath=//a[@id="logout_sidebar_link"]').waitFor({state: 'visible', timeout:3000});
-
-        await page.locator('xpath=//a[@id="logout_sidebar_link"]').click();
-
-        //step 13: wait for navigation to complete
-        await page.waitForLoadState('networkidle');
-
-        //step 14: Verify URL login page
-        await expect(page).toHaveURL('/');
-
-
-    })
-
-
-    
-
-     test('Login with Locked Out User', async ({page}) =>{
-        
-
-
-
-    })
-})
+        await test.step('Assert - locked out message is shown', async () => {
+            await loginPage.expectLockedOuterror();
+        });
+    });
+});

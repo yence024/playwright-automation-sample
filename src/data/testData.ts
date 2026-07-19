@@ -42,7 +42,10 @@ export const testUsers = {
 export const URLS = {
     LOGIN_PAGE: '/',
     DASHBOARD_PAGE: '/inventory.html',
-    CART: '/cart.html'
+    CART: '/cart.html',
+    CHECKOUT_INFO: '/checkout-step-one.html',
+    CHECKOUT_OVERVIEW: '/checkout-step-two.html',
+    CHECKOUT_COMPLETE: '/checkout-complete.html'
 } as const;
 
 
@@ -50,4 +53,34 @@ export const URLS = {
 export const EXPECTED_TEXT = {
     DASHBOARD_TITLE: 'Products',
     APP_LOGO: 'Swag Labs'
+} as const;
+
+export const CHECKOUT_DATA = {
+    VALID_INFO: {
+        firstName: 'John',
+        lastName: 'Doe',
+        postalCode: '12345'
+    },
+    MISSING_FIRST_NAME: {
+        firstName: '',
+        lastName: 'Doe',
+        postalCode: '12345'
+    },
+    MISSING_LAST_NAME: {
+        firstName: 'John',
+        lastName: '',
+        postalCode: '12345'
+    },
+    MISSING_POSTAL_CODE: {
+        firstName: 'John',
+        lastName: 'Doe',
+        postalCode: ''
+    }
+} as const;
+
+export const CHECKOUT_ERRORS = {
+    FIRST_NAME_REQUIRED: 'Error: First Name is required',
+    LAST_NAME_REQUIRED: 'Error: Last Name is required',
+    POSTAL_CODE_REQUIRED: 'Error: Postal Code is required',
+    ORDER_SUCCESS: 'Thank you for your order!'
 } as const;
